@@ -3,82 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page de Emmanuel GADJI</title>
+    <title>Morpion</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            background-color: #f0f0f0; /* Couleur de fond neutre */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .main-content {
-            flex: 1;
         }
 
         h1 {
-            font-size: 3em;
-            color: #333; /* Couleur de texte sombre */
-            opacity: 0;
-            animation: fadeIn 3s forwards;
+            margin: 20px;
         }
 
-        p {
-            font-size: 1.5em;
-            color: #666; /* Couleur de texte plus claire */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
             margin-top: 20px;
-            opacity: 0;
-            animation: fadeIn 3s 1s forwards;
         }
 
-        .footer {
-            font-size: 1.2em;
-            color: #333; /* Couleur de texte sombre pour le pied de page */
-            margin-top: 40px;
-            opacity: 0;
-            animation: slideUp 3s 2s forwards;
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background-color: #fff;
+            border: 2px solid #333;
+            cursor: pointer;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .cell:hover {
+            background-color: #e0e0e0;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .status {
+            margin: 20px;
+            font-size: 1.5em;
+        }
+
+        .reset-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .reset-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-
-    <div class="main-content">
-        <h1>Emmanuel GADJI</h1>
-        <p>DevOps2025</p>
+    <h1>Morpion</h1>
+    <div class="status" id="status">C'est le tour de X</div>
+    <div class="game-board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
     </div>
+    <button class="reset-button" id="reset">Réinitialiser</button>
 
-    <div class="footer">
-        <p>Bienvenue sur ma page web</p>
-    </div>
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const resetButton = document.getElementById('reset');
+        let currentPlayer = 'X';
+        const cells = Array.from(document.querySelectorAll('.cell'));
+        let gameState = ['', '', '', '', '', '', '', '', ''];
 
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (const combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    return gameState[a];
+                }
+            }
+            return gameState.includes('') ? null : 'Tie';
+        }
+
+        function handleClick(event) {
+            const index = event.target.getAttribute('data-index');
+            if (gameState[index] || checkWinner()) return;
+
+            gameState[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            const winner = checkWinner();
+            if (winner) {
+                if (winner === 'Tie') {
+                    status.textContent = "Égalité !";
+                } else {
+                    status.textContent = `Le joueur ${winner} a gagné !`;
+                }
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                status.textContent = `C'est le tour de ${currentPlayer}`;
+            }
+        }
+
+        function resetGame() {
+            gameState = ['', '', '', '', '', '', '', '', ''];
+            cells.forEach(cell => cell.textContent = '');
+            currentPlayer = 'X';
+            status.textContent = `C'est le tour de ${currentPlayer}`;
+        }
+
+        board.addEventListener('click', handleClick);
+        resetButton.addEventListener('click', resetGame);
+    </script>
 </body>
 </html>
-# version #
+
